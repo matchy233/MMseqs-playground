@@ -15,6 +15,7 @@ public:
   }
 
   std::vector<MMseqsParameter *> kmer2long;
+  std::vector<MMseqsParameter *> long2kmer;
 
 private:
   LocalParameters() : Parameters() {}

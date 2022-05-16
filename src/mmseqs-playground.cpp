@@ -21,15 +21,27 @@ std::vector<DatabaseDownload> externalDownloads = {};
 
 LocalParameters &localPar = LocalParameters::getLocalInstance();
 
-std::vector<struct Command> commands = {{"kmer2long",
-                                         kmer2long,
-                                         &localPar.kmer2long,
-                                         COMMAND_MAIN,
-                                         "",
-                                         NULL,
-                                         "Matchy Lee <matchy@snu.ac.kr>",
-                                         "<i:kmer string>",
-                                         CITATION_MMSEQS2,
-                                         {}}};
+std::vector<struct Command> commands = {
+    {"kmer2long",
+     kmer2long,
+     &localPar.kmer2long,
+     COMMAND_MAIN,
+     "",
+     NULL,
+     "Matchy Lee <matchy@snu.ac.kr>",
+     "<i:kmer string>",
+     CITATION_MMSEQS2,
+     {}},
+    {"long2kmer",
+     long2kmer,
+     &localPar.long2kmer,
+     COMMAND_MAIN,
+     "",
+     NULL,
+     "Matchy Lee <matchy@snu.ac.kr",
+     "<i:long integer>",
+     CITATION_MMSEQS2,
+     {}},
+};
 
 void updateValidation() {}
