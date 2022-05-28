@@ -22,7 +22,11 @@ public:
     std::vector<MMseqsParameter *> printprofile;
 
 private:
-    LocalParameters() : Parameters() {}
+    LocalParameters() : Parameters() {
+        printprofile.push_back(&PARAM_THREADS);
+        printprofile.push_back(&PARAM_K);
+        printprofile.push_back(&PARAM_V);
+    }
 
     LocalParameters(LocalParameters const &);
 
