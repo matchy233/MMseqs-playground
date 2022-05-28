@@ -38,10 +38,20 @@ std::vector<struct Command> commands = {
      COMMAND_MAIN,
      "",
      NULL,
-     "Matchy Lee <matchy@snu.ac.kr",
+     "Matchy Lee <matchy@snu.ac.kr>",
      "<i:long integer>",
      CITATION_MMSEQS2,
      {}},
+    {"printprofile",
+     printprofile,
+     &localPar.printprofile,
+     COMMAND_MAIN,
+     "",
+     NULL,
+     "Matchy Lee <matchy@snu.ac.kr>",
+     "<i:profiledb>",
+     CITATION_MMSEQS2,
+     {{"queryDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb}}},
 };
 
 void updateValidation() {}

@@ -3,27 +3,31 @@
 
 #include <Parameters.h>
 
-class LocalParameters : public Parameters {
+class LocalParameters : public Parameters
+{
 public:
-  static void initInstance() { new LocalParameters; }
+    static void initInstance() { new LocalParameters; }
 
-  static LocalParameters &getLocalInstance() {
-    if (instance == NULL) {
-      initInstance();
+    static LocalParameters &getLocalInstance()
+    {
+        if (instance == NULL)
+        {
+            initInstance();
+        }
+        return static_cast<LocalParameters &>(LocalParameters::getInstance());
     }
-    return static_cast<LocalParameters &>(LocalParameters::getInstance());
-  }
 
-  std::vector<MMseqsParameter *> kmer2long;
-  std::vector<MMseqsParameter *> long2kmer;
+    std::vector<MMseqsParameter *> kmer2long;
+    std::vector<MMseqsParameter *> long2kmer;
+    std::vector<MMseqsParameter *> printprofile;
 
 private:
-  LocalParameters() : Parameters() {}
+    LocalParameters() : Parameters() {}
 
-  LocalParameters(LocalParameters const &);
+    LocalParameters(LocalParameters const &);
 
-  ~LocalParameters(){};
+    ~LocalParameters(){};
 
-  void operator=(LocalParameters const &);
+    void operator=(LocalParameters const &);
 };
 #endif
