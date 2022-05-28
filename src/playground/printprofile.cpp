@@ -40,9 +40,16 @@ int printprofile(int argc, const char **argv, const Command &command)
         for (size_t i = 0; i < reader.getSize(); i++)
         {
             const char *seqData = reader.getData(i, thread_idx);
-            seq.mapSequence(i, i, seqData, reader.getSeqLen(i));
+            size_t querySeqLen = reader.getSeqLen(i);
+            seq.mapSequence(i, i, seqData, querySeqLen);
             std::string realSeq;
             seq.extractProfileSequence(seqData, *subMat, realSeq);
+            if (realSeq.length() != querySeqLen) {
+                Debug(Debug::ERROR) << "Error: sequence length does not match.\n";
+                Debug(Debug::ERROR) << "Expected equence length: " << querySeqLen << "\n";
+                Debug(Debug::ERROR) << "Actual sequence length: " << realSeq.length() << "\n";
+                EXIT(EXIT_FAILURE);
+            }
             results.push_back(realSeq);
         }
 
