@@ -49,9 +49,10 @@ std::vector<struct Command> commands = {
      "",
      NULL,
      "Matchy Lee <matchy@snu.ac.kr>",
-     "<i:profiledb>",
+     "<i:profiledb> <i:seqDb>",
      CITATION_MMSEQS2,
-     {{"queryDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb}}},
+     {{"profileDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb},
+     {"seqDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::sequenceDb}}},
 };
 
 void updateValidation() {}
