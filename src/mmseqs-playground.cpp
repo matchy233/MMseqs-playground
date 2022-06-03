@@ -32,7 +32,8 @@ std::vector<struct Command> commands = {
                 "Matchy Lee <matchy@snu.ac.kr>",
                 "<i:kmer string>",
                 CITATION_MMSEQS2,
-                {}},
+                {}
+        },
         {"long2kmer",
                 long2kmer,
                 &localPar.long2kmer,
@@ -42,7 +43,8 @@ std::vector<struct Command> commands = {
                 "Matchy Lee <matchy@snu.ac.kr>",
                 "<i:long integer>",
                 CITATION_MMSEQS2,
-                {}},
+                {}
+        },
         {"printprofile",
                 printprofile,
                 &localPar.printprofile,
@@ -52,8 +54,26 @@ std::vector<struct Command> commands = {
                 "Matchy Lee <matchy@snu.ac.kr>",
                 "<i:profiledb> <i:seqDb>",
                 CITATION_MMSEQS2,
-                {{"profileDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb},
-                        {"seqDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::sequenceDb}}},
+                {
+                        {"profileDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb},
+                        {"seqDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::sequenceDb}
+                }
+        },
+        {"genkmer",
+                genkmer,
+                &localPar.genkmer,
+                COMMAND_MAIN,
+                "",
+                NULL,
+                "Matchy Lee <matchy@snu.ac.kr>",
+                "<i:profiledb> <i:seqdb>",
+                CITATION_MMSEQS2,
+                {
+                        {"profileDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::profileDb},
+                        {"seqDB", DbType::ACCESS_MODE_INPUT, DbType::NEED_DATA, &DbValidator::sequenceDb}
+                }
+        },
+
 };
 
 void updateValidation() {}
