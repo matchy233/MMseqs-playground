@@ -10,7 +10,7 @@
 // define const unsigned char* as Kmer type
 typedef size_t Kmer;
 
-std::vector<Kmer> readAndGenerateKmer(std::string db, std::string dbIndex,
+std::vector<Kmer> readAndGenerateKmer(const std::string& db, const std::string& dbIndex,
                                       LocalParameters &par, double similarKmerFactor = 1.5);
 
 
@@ -18,14 +18,36 @@ int genkmer(int argc, const char **argv, const Command &command) {
     LocalParameters &par = LocalParameters::getLocalInstance();
     par.parseParameters(argc, argv, command, true, 0, Parameters::PARSE_VARIADIC);
 
-    std::vector<Kmer> kmerFromSeqDB = readAndGenerateKmer(par.db2, par.db2Index, par);
-    std::vector<Kmer> kmerFromProfileDB = readAndGenerateKmer(par.db1, par.db1Index, par, 5);
+    std::vector<Kmer> kmerFromSeqDB, kmerFromProfileDB;
 
-    Debug(Debug::INFO) << "Number of kmer retrieved from sequence DB:\t" << kmerFromSeqDB.size() << "\n";
-    Debug(Debug::INFO) << "Numbe of kmer retrieved from profile DB:\t" << kmerFromProfileDB.size() << "\n";
+    if (par.useProfileOnly && par.useSeqOnly) {
+        Debug(Debug::ERROR) << "Cannot set --profile-only 1 and --seq-only 1 at the same time. \n";
+        EXIT(EXIT_FAILURE);
+    }
+
+    if (par.useSeqOnly) {
+        kmerFromSeqDB = readAndGenerateKmer(par.db2, par.db2Index, par);
+        kmerFromProfileDB = {}; // empty
+    } else if (par.useProfileOnly) {
+        kmerFromSeqDB = {}; // empty
+        kmerFromProfileDB = readAndGenerateKmer(par.db1, par.db1Index, par, 5);
+    } else {
+        kmerFromSeqDB = readAndGenerateKmer(par.db2, par.db2Index, par);
+        kmerFromProfileDB = readAndGenerateKmer(par.db1, par.db1Index, par, 5);
+    }
+
+    if (!kmerFromSeqDB.empty()) {
+
+        Debug(Debug::INFO) << "Number of kmer retrieved from sequence DB:\t" << kmerFromSeqDB.size() << "\n";
+    }
+    if (!kmerFromProfileDB.empty()) {
+        Debug(Debug::INFO) << "Numbee of kmer retrieved from profile DB:\t" << kmerFromProfileDB.size() << "\n";
+    }
 
 
-    if (kmerFromProfileDB.size() < kmerFromSeqDB.size()) {
+    if (!kmerFromProfileDB.empty() &&
+        !kmerFromSeqDB.empty() &&
+        kmerFromProfileDB.size() < kmerFromSeqDB.size()) {
         Debug(Debug::WARNING) << "The number of kmer generated from profile database"
                               << "is fewer than that of sequence database!\n";
     }
@@ -33,8 +55,8 @@ int genkmer(int argc, const char **argv, const Command &command) {
     return EXIT_SUCCESS;
 }
 
-std::vector<Kmer> readAndGenerateKmer(std::string db,
-                                      std::string dbIndex, LocalParameters &par,
+std::vector<Kmer> readAndGenerateKmer(const std::string& db,
+                                      const std::string& dbIndex, LocalParameters &par,
                                       double similarKmerFactor) {
 
     int seqType = FileUtil::parseDbType(db.c_str());

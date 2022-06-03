@@ -19,8 +19,29 @@ public:
     std::vector<MMseqsParameter *> printprofile;
     std::vector<MMseqsParameter *> genkmer;
 
+    PARAMETER(PARAM_SEQ_ONLY)
+    bool useSeqOnly;
+
+    PARAMETER(PARAM_PROFILE_ONLY)
+    bool useProfileOnly;
+
 private:
-    LocalParameters() : Parameters() {
+    LocalParameters() : Parameters(),
+                        PARAM_SEQ_ONLY(PARAM_SEQ_ONLY_ID,
+                                           "--seq-only",
+                                           "Instruct genkmer to use sequence DB only",
+                                           "Instruct genkmer to use sequence DB only",
+                                           typeid(bool),
+                                           (void *) &useSeqOnly,
+                                           "^[0-1]{1}$"),
+                        PARAM_PROFILE_ONLY(PARAM_PROFILE_ONLY_ID,
+                                       "--profile-only",
+                                       "Instruct genkmer to use profile DB only",
+                                       "Instruct genkmer to use profile DB only",
+                                       typeid(bool),
+                                       (void *) &useProfileOnly,
+                                       "^[0-1]{1}$")
+    {
         printprofile.push_back(&PARAM_THREADS);
         printprofile.push_back(&PARAM_K);
         printprofile.push_back(&PARAM_V);
@@ -37,6 +58,9 @@ private:
 
         kmerSize = 9;
         kmerScore = 225;
+
+        useProfileOnly = false;
+        useSeqOnly = false;
     }
 
     LocalParameters(LocalParameters const &);
