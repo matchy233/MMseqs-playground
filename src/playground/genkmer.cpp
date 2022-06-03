@@ -21,6 +21,10 @@ int genkmer(int argc, const char **argv, const Command &command) {
     std::vector<Kmer> kmerFromSeqDB = readAndGenerateKmer(par.db2, par.db2Index, par);
     std::vector<Kmer> kmerFromProfileDB = readAndGenerateKmer(par.db1, par.db1Index, par, 5);
 
+    Debug(Debug::INFO) << "Number of kmer retrieved from sequence DB:\t" << kmerFromSeqDB.size() << "\n";
+    Debug(Debug::INFO) << "Numbe of kmer retrieved from profile DB:\t" << kmerFromProfileDB.size() << "\n";
+
+
     if (kmerFromProfileDB.size() < kmerFromSeqDB.size()) {
         Debug(Debug::WARNING) << "The number of kmer generated from profile database"
                               << "is fewer than that of sequence database!\n";
@@ -49,8 +53,8 @@ std::vector<Kmer> readAndGenerateKmer(std::string db,
         EXIT(EXIT_FAILURE);
     }
 
-    Debug(Debug::INFO) << "kmer threshold for profile: " << par.kmerScore.values.profile()
-                       << "kmer threshold for sequence: " << par.kmerScore.values.sequence()
+    Debug(Debug::INFO) << "kmer threshold for profile: " << par.kmerScore.values.profile() << "\n"
+                       << "kmer threshold for sequence: " << par.kmerScore.values.sequence() << "\n"
                        << "\n";
 
     DBReader<unsigned int> reader(db.c_str(), dbIndex.c_str(), par.threads,
@@ -152,5 +156,16 @@ shared(par, reader, subMat, progress, seqType, twoMatrix, threeMatrix, tableCapa
 #pragma omp critical
         resultTable.insert(resultTable.end(), localTable.begin(), localTable.end());
     }
+
+    delete subMat;
+    subMat = nullptr;
+
+    if (!isProfile) {
+        ExtendedSubstitutionMatrix::freeScoreMatrix(twoMatrix);
+        ExtendedSubstitutionMatrix::freeScoreMatrix(threeMatrix);
+    }
+
+    reader.close();
+
     return resultTable;
 }
