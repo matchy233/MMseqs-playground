@@ -41,7 +41,7 @@ int genkmer(int argc, const char **argv, const Command &command) {
         Debug(Debug::INFO) << "Number of kmer retrieved from sequence DB:\t" << kmerFromSeqDB.size() << "\n";
     }
     if (!kmerFromProfileDB.empty()) {
-        Debug(Debug::INFO) << "Numbee of kmer retrieved from profile DB:\t" << kmerFromProfileDB.size() << "\n";
+        Debug(Debug::INFO) << "Number of kmer retrieved from profile DB:\t" << kmerFromProfileDB.size() << "\n";
     }
 
 
@@ -67,7 +67,7 @@ std::vector<Kmer> readAndGenerateKmer(const std::string& db,
 
     if (isProfile) {
         // the values are set according to lib/mmseqs/src/util/profile2seq.cpp
-        subMat = new SubstitutionMatrix(par.seedScoringMatrixFile.values.aminoacid().c_str(), 2.0f, 0.0);
+        subMat = new SubstitutionMatrix(par.seedScoringMatrixFile.values.aminoacid().c_str(), 8.0, -0.2f);
     } else if (Parameters::isEqualDbtype(seqType, Parameters::DBTYPE_AMINO_ACIDS)) {
         subMat = new SubstitutionMatrix(par.seedScoringMatrixFile.values.aminoacid().c_str(), 8.0, -0.2f);
     } else {
@@ -100,10 +100,10 @@ std::vector<Kmer> readAndGenerateKmer(const std::string& db,
     int xIndex = subMat->aa2num[(int) 'X'];
 
     ScoreMatrix twoMatrix, threeMatrix;
-    if (!isProfile) {
+    // if (!isProfile) {
         twoMatrix = ExtendedSubstitutionMatrix::calcScoreMatrix(*subMat, 2);
         threeMatrix = ExtendedSubstitutionMatrix::calcScoreMatrix(*subMat, 3);
-    }
+    // }
 
     Debug::Progress progress(reader.getSize());
 #pragma omp parallel default(none) \
@@ -116,14 +116,14 @@ shared(par, reader, subMat, progress, seqType, twoMatrix, threeMatrix, tableCapa
         total_threads = (unsigned int) omp_get_num_threads();
 #endif
         Indexer idx(subMat->alphabetSize - 1, par.kmerSize);
-        Sequence sequence(par.maxSeqLen, seqType, subMat, par.kmerSize, par.spacedKmer, false,
-                          !isProfile);
+        Sequence sequence(par.maxSeqLen, seqType, subMat, par.kmerSize, par.spacedKmer, -0.2f, !isProfile);
 
         KmerGenerator kmerGenerator(par.kmerSize, subMat->alphabetSize - 1,
                                     isProfile ? par.kmerScore.values.profile() : par.kmerScore.values.sequence());
 
         if (isProfile && sequence.profile_matrix != nullptr) {
-            kmerGenerator.setDivideStrategy(sequence.profile_matrix);
+            // kmerGenerator.setDivideStrategy(sequence.profile_matrix);
+            kmerGenerator.setDivideStrategy(&threeMatrix, &twoMatrix);
         } else {
             if (isProfile && sequence.profile_matrix == nullptr) {
                 Debug(Debug::WARNING) << "The profile matrix retrieved from the profile database is empty!\n";
@@ -137,7 +137,6 @@ shared(par, reader, subMat, progress, seqType, twoMatrix, threeMatrix, tableCapa
 #pragma omp for schedule(dynamic, 1)
         for (size_t i = 0; i < reader.getSize(); ++i) {
             progress.updateProgress();
-//            unsigned int key = reader.getDbKey(i);
             char *data = reader.getData(i, (int) thread_idx);
             unsigned int seqLen = reader.getSeqLen(i);
             sequence.mapSequence(i, 0, data, seqLen);
@@ -182,10 +181,10 @@ shared(par, reader, subMat, progress, seqType, twoMatrix, threeMatrix, tableCapa
     delete subMat;
     subMat = nullptr;
 
-    if (!isProfile) {
+    // if (!isProfile) {
         ExtendedSubstitutionMatrix::freeScoreMatrix(twoMatrix);
         ExtendedSubstitutionMatrix::freeScoreMatrix(threeMatrix);
-    }
+    // }
 
     reader.close();
 

@@ -55,6 +55,8 @@ private:
         genkmer.push_back(&PARAM_COMPRESSED);
         genkmer.push_back(&PARAM_THREADS);
         genkmer.push_back(&PARAM_V);
+        genkmer.push_back(&PARAM_SEQ_ONLY);
+        genkmer.push_back(&PARAM_PROFILE_ONLY);
 
         kmerSize = 9;
         kmerScore = 225;
